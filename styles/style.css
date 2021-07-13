@@ -1,0 +1,81 @@
+/* Page Layout, Style, and Heading */
+
+html{
+    /*background-color: blueviolet;*/
+    /*color: white;*/
+    background-color: black;
+    color: gold;
+    font-family: sans-serif;
+}
+
+body{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+h1{
+    font-style: italic;
+    margin-bottom: 0.5vh;
+}
+
+/* Canvas  */
+
+#canvasDiv{
+    width: 100%;
+    height: 85%;
+    overflow: scroll hidden;
+}
+
+#pageCanvas{
+    position: relative; top: 0%; bottom: 0%; left: 0%; right: 0%;
+    z-index: 0;
+    background-color: white;
+    /*border: 3px solid black;*/
+    border: 3px solid gold;
+}
+
+/* Spans/"Keys" */
+
+#spanDiv{
+    padding-left: 3px;
+    height: 1vmax;
+}
+
+span{
+    display: inline-block;
+    position: relative; top: 0%; bottom: 0%; left: 0%; right: 0%;
+    z-index: 1;
+}
+
+.hoveredKey{
+    background-color: rgba(135, 125, 115, 0.12);
+}
+
+.normalKey{
+    background-color: transparent;
+}
+
+.pressedKey{
+    background-color: rgba(148, 148, 148, 0.24);
+    box-shadow: 0px 0px 1px 1px black;
+}
+
+/* NumKeys Text & Buttons */
+
+#numKeysVisible{
+    margin-top: 10px;
+}
+
+#numKeysVisible p{
+    display: inline;
+    font-size: 1.4rem;
+    font-style: italic;
+    font-weight: bolder;
+}
+
+#numKeysVisible button{
+    width: 5vw;
+    font-size: 1rem;
+}

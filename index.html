@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="author" content="Rohaan Wasim">
+        <meta name="description" content="Learning and practicing using the Javascript canvas.">
+        <meta name="viewport" content="width=device-width">
+        <title>Canvas Practice</title>
+        <link rel="stylesheet" href="styles/style.css" type="text/css">
+        <script src="scripts/main.js" defer></script>
+    </head>
+    <body onload="setUp();">
+        <h1>Virtual Keyboard</h1>
+        <div id="canvasDiv">
+            <!-- Consider having Ids include the name
+            of the Key, the Number/Iteration of Occurrence of the key,
+            and the current keyboard key which corresponds to that key.  -->
+            <div id="spanDiv">
+                <span id="C1"></span
+                ><span id="C#/D♭1"></span
+                ><span id="D1"></span
+                ><span id="D#/E♭1"></span
+                ><span id="E1"></span
+                ><span id="F1"></span
+                ><span id="F#/G♭1"></span
+                ><span id="G1"></span
+                ><span id="G#/A♭1"></span
+                ><span id="A1"></span
+                ><span id="A#/B♭1"></span
+                ><span id="B1"></span
+                ><span id="C2"></span
+                ><span id="C#/D♭2"></span
+                ><span id="D2"></span
+                ><span id="D#/E♭2"></span
+                ><span id="E2"></span
+                ><span id="F2"></span
+                ><span id="F#/G♭2"></span
+                ><span id="G2"></span
+                ><span id="G#/A♭2"></span
+                ><span id="A2"></span
+                ><span id="A#/B♭2"></span
+                ><span id="B2"></span
+                ><span id="C3"></span
+                ><span id="C#/D♭3"></span
+                ><span id="D3"></span
+                ><span id="D#/E♭3"></span
+                ><span id="E3"></span
+                ><span id="F3"></span
+                ><span id="F#/G♭3"></span
+                ><span id="G3"></span
+                ><span id="G#/A♭3"></span
+                ><span id="A3"></span
+                ><span id="A#/B♭3"></span
+                ><span id="B3"></span
+                ><span id="C4"></span
+                ><span id="C#/D♭4"></span
+                ><span id="D4"></span
+                ><span id="D#/E♭4"></span
+                ><span id="E4"></span
+                ><span id="F4"></span
+                ><span id="F#/G♭4"></span
+                ><span id="G4"></span
+                ><span id="G#/A♭4"></span
+                ><span id="A4"></span
+                ><span id="A#/B♭4"></span
+                ><span id="B4"></span
+                ><span id="C5"></span>
+                <!-- Commenting out last set of keys
+                    due to lack of actual keys on the keyboard
+                    to support them.
+                ><span id="C#/D♭5"></span
+                ><span id="D5"></span
+                ><span id="D#/E♭5"></span
+                ><span id="E5"></span
+                ><span id="F5"></span
+                ><span id="F#/G♭5"></span
+                ><span id="G5"></span
+                ><span id="G#/A♭5"></span
+                ><span id="A5"></span
+                ><span id="A#/B♭5"></span
+                ><span id="B5"></span
+                ><span id="C6"></span>
+                -->
+            </div>
+            <canvas id="pageCanvas">
+                <p>Your browser does not support Canvas.</p>
+            </canvas>
+        </div>
+        <div id="numKeysVisible">
+            <p># of Visible Keys: </p>
+            <button id="12-keys">12</button>
+            <button id="24-keys">24</button>
+            <button id="36-keys">36</button>
+            <button id="49-keys">49</button>
+            <!-- <button id="61-keys">61</button> -->
+        </div>
+    </body>
+</html>
