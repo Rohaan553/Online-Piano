@@ -19,6 +19,18 @@ let canvas: HTMLCanvasElement;
 let canvasContainer: HTMLDivElement;
 let ctx: CanvasRenderingContext2D|null;
 let spanDiv: HTMLDivElement;
+
+class NoteObject{
+    note: string;
+    noteNumber: number;
+    notePressed: boolean;
+
+    constructor(enteredNote: string, noteNum: number){
+        this.note = enteredNote;
+        this.noteNumber = noteNum;
+        this.notePressed = false;
+    }
+}
 //"Map" object which maps keys on the keyboard to the various keys on the piano.
 const keyBindings: Map<string, string> = new Map<string, string>();
 //Object which keeps track of which keys are pressed to prevent duplicates.
@@ -81,7 +93,7 @@ function setUp(){
         //Adding event listener for when keys are pressed.
         window.addEventListener("keydown", onKeyPressed);
         window.addEventListener("keyup", onKeyReleased);
-
+        
         /* Setting default key bindings: */
         //NOTE: can change insertion order to utilize the ".keys()" method when drawing key
         //bindings on keyboard.
@@ -249,7 +261,7 @@ function onKeyPressed(event: KeyboardEvent){
     //console.log(event.key.toLowerCase());
 
     //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized.
+    //containing letters won't be recognized unless explicitly lower-cased.
     let keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if(keyBindings.has(keyPressed)){
@@ -270,7 +282,7 @@ function onKeyPressed(event: KeyboardEvent){
 
 function onKeyReleased(event: KeyboardEvent){
     //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized.
+    //containing letters won't be recognized unless explicitly lower-cased.
     let keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if(keyBindings.has(keyPressed)){

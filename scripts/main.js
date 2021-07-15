@@ -18,6 +18,14 @@ var canvas;
 var canvasContainer;
 var ctx;
 var spanDiv;
+var NoteObject = /** @class */ (function () {
+    function NoteObject(enteredNote, noteNum) {
+        this.note = enteredNote;
+        this.noteNumber = noteNum;
+        this.notePressed = false;
+    }
+    return NoteObject;
+}());
 //"Map" object which maps keys on the keyboard to the various keys on the piano.
 var keyBindings = new Map();
 //Object which keeps track of which keys are pressed to prevent duplicates.
@@ -222,7 +230,7 @@ function onKeyPressed(event) {
     //console.log(event.key);
     //console.log(event.key.toLowerCase());
     //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized.
+    //containing letters won't be recognized unless explicitly lower-cased.
     var keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if (keyBindings.has(keyPressed)) {
@@ -242,7 +250,7 @@ function onKeyPressed(event) {
 }
 function onKeyReleased(event) {
     //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized.
+    //containing letters won't be recognized unless explicitly lower-cased.
     var keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if (keyBindings.has(keyPressed)) {
