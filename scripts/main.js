@@ -73,21 +73,21 @@ function setUp() {
         //NOTE: can change insertion order to utilize the ".keys()" method when drawing key
         //bindings on keyboard.
         //First Octave
-        keyBindings.set("Escape", "C1");
+        keyBindings.set("escape", "C1");
         keyBindings.set("`", "D1");
         keyBindings.set("1", "E1");
         keyBindings.set("2", "F1");
         keyBindings.set("3", "G1");
         keyBindings.set("4", "A1");
         keyBindings.set("5", "B1");
-        keyBindings.set("F1", "C#/D♭1");
-        keyBindings.set("F2", "D#/E♭1");
-        keyBindings.set("F3", "F#/G♭1");
-        keyBindings.set("F4", "G#/A♭1");
-        keyBindings.set("F5", "A#/B♭1");
+        keyBindings.set("f1", "C#/D♭1");
+        keyBindings.set("f2", "D#/E♭1");
+        keyBindings.set("f3", "F#/G♭1");
+        keyBindings.set("f4", "G#/A♭1");
+        keyBindings.set("f5", "A#/B♭1");
         //Second Octave
-        keyBindings.set("Tab", "C2");
-        keyBindings.set("CapsLock", "D2");
+        keyBindings.set("tab", "C2");
+        keyBindings.set("capslock", "D2");
         keyBindings.set("a", "E2");
         keyBindings.set("s", "F2");
         keyBindings.set("d", "G2");
@@ -112,18 +112,18 @@ function setUp() {
         keyBindings.set("p", "G#/A♭3");
         keyBindings.set("[", "A#/B♭3");
         //Fourth Octave
-        keyBindings.set("F6", "C4");
+        keyBindings.set("f6", "C4");
         keyBindings.set("7", "D4");
         keyBindings.set("8", "E4");
         keyBindings.set("9", "F4");
         keyBindings.set("0", "G4");
         keyBindings.set("-", "A4");
         keyBindings.set("=", "B4");
-        keyBindings.set("F7", "C#/D♭4");
-        keyBindings.set("F8", "D#/E♭4");
-        keyBindings.set("F9", "F#/G♭4");
-        keyBindings.set("F10", "G#/A♭4");
-        keyBindings.set("F11", "A#/B♭4");
+        keyBindings.set("f7", "C#/D♭4");
+        keyBindings.set("f8", "D#/E♭4");
+        keyBindings.set("f9", "F#/G♭4");
+        keyBindings.set("f10", "G#/A♭4");
+        keyBindings.set("f11", "A#/B♭4");
         //Last C
         keyBindings.set("Enter", "C5");
         /* Default key pressed values. Initially, no keys are pressed and therefore
@@ -178,8 +178,8 @@ function setUp() {
         pressedKeys.set("B4", false);
         pressedKeys.set("C5", false);
         //Testing
-        console.log(keyBindings);
-        console.log(pressedKeys);
+        //console.log(keyBindings);
+        //console.log(pressedKeys);
         //Drawing the piano
         draw();
     }
@@ -191,6 +191,9 @@ function setUp() {
 //*****************************************//
 /* Interactivity & Functionality */
 //*****************************************//
+function playNote(e) {
+    console.log(e.target.id);
+}
 //Note: 24 keys are initially displayed.
 function initializeKeySpan(spanElement, key) {
     //Adding Event Listeners
@@ -214,9 +217,13 @@ function onMousePressed(event) {
 }
 function onKeyPressed(event) {
     event.preventDefault();
-    console.log(event);
-    console.log(event.key);
-    var keyPressed = event.key;
+    //For Testing:
+    //console.log(event);
+    //console.log(event.key);
+    //console.log(event.key.toLowerCase());
+    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
+    //containing letters won't be recognized.
+    var keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if (keyBindings.has(keyPressed)) {
         var playedNote = keyBindings.get(keyPressed);
@@ -234,7 +241,9 @@ function onKeyPressed(event) {
     }
 }
 function onKeyReleased(event) {
-    var keyPressed = event.key;
+    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
+    //containing letters won't be recognized.
+    var keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if (keyBindings.has(keyPressed)) {
         //When the key is released, the pressedKeys's entry for they key is set to false
@@ -244,9 +253,6 @@ function onKeyReleased(event) {
         var pressedSpan = document.getElementById(playedNote);
         pressedSpan.setAttribute("class", "normalKey");
     }
-}
-function playNote(e) {
-    console.log(e.target.id);
 }
 function resizeSpans(pianoKey) {
     if (pianoKey)

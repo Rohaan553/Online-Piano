@@ -8,8 +8,17 @@
         <title>Canvas Practice</title>
         <link rel="stylesheet" href="styles/style.css" type="text/css">
         <script src="scripts/main.js" defer></script>
+        <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js' defer></script>
+		<script src='https://surikov.github.io/webaudiofontdata/sound/0000_SoundBlasterOld_sf2.js' defer></script>
+        <script defer>
+            var newAudioContext = new window.AudioContext;
+            function printBindings(){
+                console.log(keyBindings);
+                console.log(pressedKeys);
+            }
+        </script>
     </head>
-    <body onload="setUp();">
+    <body onload="setUp(); printBindings();">
         <h1>Virtual Keyboard</h1>
         <div id="canvasDiv">
             <!-- Consider having Ids include the name

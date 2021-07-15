@@ -10,7 +10,6 @@
 //  ** Add different tones to piano.
 //  3. When hovered/pressed, the change in background color of the White keys is also applied to the Black keys that are above them.
 // ** Could group together note, note audio, and pressed status as an object which is mapped to key bindings in 1 Map Object.
-
 //*****************************************//
 /* Necessary Variables */
 //*****************************************//
@@ -21,9 +20,9 @@ let canvasContainer: HTMLDivElement;
 let ctx: CanvasRenderingContext2D|null;
 let spanDiv: HTMLDivElement;
 //"Map" object which maps keys on the keyboard to the various keys on the piano.
-let keyBindings = new Map();
+const keyBindings: Map<string, string> = new Map<string, string>();
 //Object which keeps track of which keys are pressed to prevent duplicates.
-let pressedKeys = new Map();
+const pressedKeys: Map<string, boolean> = new Map<string, boolean>();
 //Keys' dimension variables declared at the start for global access.
 let whiteKeyHeight: number;
 let whiteKeyWidth: number;
@@ -38,6 +37,7 @@ let offset: number;
 function setUp(){
     canvas = document.getElementById("pageCanvas") as HTMLCanvasElement;
     if(canvas.getContext){
+
         ctx = canvas.getContext("2d");
         canvasContainer = document.getElementById("canvasDiv") as HTMLDivElement;
         //Heights of Canvas and Black & White Keys are Constant
@@ -86,22 +86,22 @@ function setUp(){
         //NOTE: can change insertion order to utilize the ".keys()" method when drawing key
         //bindings on keyboard.
         //First Octave
-        keyBindings.set("Escape", "C1");
+        keyBindings.set("escape", "C1");
         keyBindings.set("`", "D1");
         keyBindings.set("1", "E1");
         keyBindings.set("2", "F1");
         keyBindings.set("3", "G1");
         keyBindings.set("4", "A1");
         keyBindings.set("5", "B1");
-        keyBindings.set("F1", "C#/D♭1");
-        keyBindings.set("F2", "D#/E♭1");
-        keyBindings.set("F3", "F#/G♭1");
-        keyBindings.set("F4", "G#/A♭1");
-        keyBindings.set("F5", "A#/B♭1");
+        keyBindings.set("f1", "C#/D♭1");
+        keyBindings.set("f2", "D#/E♭1");
+        keyBindings.set("f3", "F#/G♭1");
+        keyBindings.set("f4", "G#/A♭1");
+        keyBindings.set("f5", "A#/B♭1");
 
         //Second Octave
-        keyBindings.set("Tab", "C2");
-        keyBindings.set("CapsLock", "D2");
+        keyBindings.set("tab", "C2");
+        keyBindings.set("capslock", "D2");
         keyBindings.set("a", "E2");
         keyBindings.set("s", "F2");
         keyBindings.set("d", "G2");
@@ -128,18 +128,18 @@ function setUp(){
         keyBindings.set("[", "A#/B♭3");
 
         //Fourth Octave
-        keyBindings.set("F6", "C4");
+        keyBindings.set("f6", "C4");
         keyBindings.set("7", "D4");
         keyBindings.set("8", "E4");
         keyBindings.set("9", "F4");
         keyBindings.set("0", "G4");
         keyBindings.set("-", "A4");
         keyBindings.set("=", "B4");
-        keyBindings.set("F7", "C#/D♭4");
-        keyBindings.set("F8", "D#/E♭4");
-        keyBindings.set("F9", "F#/G♭4");
-        keyBindings.set("F10", "G#/A♭4");
-        keyBindings.set("F11", "A#/B♭4");
+        keyBindings.set("f7", "C#/D♭4");
+        keyBindings.set("f8", "D#/E♭4");
+        keyBindings.set("f9", "F#/G♭4");
+        keyBindings.set("f10", "G#/A♭4");
+        keyBindings.set("f11", "A#/B♭4");
 
         //Last C
         keyBindings.set("Enter", "C5");
@@ -196,9 +196,8 @@ function setUp(){
         pressedKeys.set("B4", false);
         pressedKeys.set("C5", false);
         //Testing
-        console.log(keyBindings);
-        console.log(pressedKeys);
-
+        //console.log(keyBindings);
+        //console.log(pressedKeys);
         //Drawing the piano
         draw();
     }
@@ -211,6 +210,10 @@ function setUp(){
 //*****************************************//
 /* Interactivity & Functionality */
 //*****************************************//
+
+function playNote(e: Event){
+    console.log((e.target as HTMLSpanElement).id);
+}
 
 //Note: 24 keys are initially displayed.
 function initializeKeySpan(spanElement: HTMLSpanElement, key: number){
@@ -233,24 +236,30 @@ function onHover(event: MouseEvent){
 function normal(event: MouseEvent){
     (event.target as HTMLSpanElement).setAttribute("class", "normalKey");
 }
+
 function onMousePressed(event: MouseEvent){
     (event.target as HTMLSpanElement).setAttribute("class", "pressedKey");
 }
 
 function onKeyPressed(event: KeyboardEvent){
     event.preventDefault();
-    console.log(event);
-    console.log(event.key);
-    let keyPressed = event.key;
+    //For Testing:
+    //console.log(event);
+    //console.log(event.key);
+    //console.log(event.key.toLowerCase());
+
+    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
+    //containing letters won't be recognized.
+    let keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if(keyBindings.has(keyPressed)){
         let playedNote = keyBindings.get(keyPressed);
-        let pressedSpan = document.getElementById(playedNote);
+        let pressedSpan = document.getElementById(playedNote!);
         pressedSpan!.setAttribute("class", "pressedKey");
         //If the key isn't pressed, it is set to true in the pressedKeys binding.
         //If the key is already pressed, nothing happens.
-        if(!pressedKeys.get(playedNote)){
-            pressedKeys.set(playedNote, true);
+        if(!pressedKeys.get(playedNote!)){
+            pressedKeys.set(playedNote!, true);
             console.log("Key played");
         }
         else{
@@ -260,21 +269,20 @@ function onKeyPressed(event: KeyboardEvent){
 }
 
 function onKeyReleased(event: KeyboardEvent){
-    let keyPressed = event.key;
+    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
+    //containing letters won't be recognized.
+    let keyPressed = event.key.toLowerCase();
     //The code only runs if the key that is pressed is bound to a note.
     if(keyBindings.has(keyPressed)){
         //When the key is released, the pressedKeys's entry for they key is set to false
         //as that key is no longer pressed.
         let playedNote = keyBindings.get(keyPressed);
-        pressedKeys.set(playedNote, false);
-        let pressedSpan = document.getElementById(playedNote);
+        pressedKeys.set(playedNote!, false);
+        let pressedSpan = document.getElementById(playedNote!);
         pressedSpan!.setAttribute("class", "normalKey");
     }
 }
 
-function playNote(e: Event){
-    console.log((e.target as HTMLSpanElement).id);
-}
 function resizeSpans(pianoKey?: HTMLSpanElement){
     if(pianoKey)
         resizingSpan(pianoKey);
