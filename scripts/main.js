@@ -1,23 +1,10 @@
-//Problems that need Solved + Ideas:
-//  1. Depending on screen size, Spans are offset incorrectly
-//     resulting in them not covering the entire key. This also affects the shadow effect onpress/onclick
-//  2. Need to? precisely place C6 so that it does not go to the start of the div
-//     and does not take up more or less room than available.
-//  ** Highlight "Middle C" on Canvas
-//  ** If the user's screen is large enough, add a button which allows the user to look up a video tutorial of the song they want to play.
-//     When they select a song, a Video/IFrame element loads above the piano w/ the video which they can play to simultaneously watch
-//     the tutorial and play the song on the piano.
-//  ** Add different tones to piano.
-//  3. When hovered/pressed, the change in background color of the White keys is also applied to the Black keys that are above them.
-// ** Could group together note, note audio, and pressed status as an object which is mapped to key bindings in 1 Map Object.
 //*****************************************//
-/* Necessary Variables */
+/* Necessary Variables & Class */
 //*****************************************//
-//Variables for accessing relevant DOM elements declared at the start for global access.
-var canvas;
-var canvasContainer;
-var ctx;
-var spanDiv;
+//Encapuslating class which contains the note, the note's number which is used to determine which note to play
+//when using the WebAudioFont package, whether or not the note is currently pressed (which is used to prevent the note
+//from repeatedly playing while the key is pressed), and an AudioBufferSourceNode which will be used to stop the note
+//when the key is released.
 var NoteObject = /** @class */ (function () {
     function NoteObject(enteredNote, noteNum) {
         this.note = enteredNote;
@@ -28,8 +15,11 @@ var NoteObject = /** @class */ (function () {
 }());
 //"Map" object which maps keys on the keyboard to the various keys on the piano.
 var keyBindings = new Map();
-//Object which keeps track of which keys are pressed to prevent duplicates.
-var pressedKeys = new Map();
+//Variables for accessing relevant DOM elements declared at the start for global access.
+var canvas;
+var canvasContainer;
+var ctx;
+var spanDiv;
 //Keys' dimension variables declared at the start for global access.
 var whiteKeyHeight;
 var whiteKeyWidth;
@@ -52,8 +42,8 @@ function setUp() {
         canvas.width = window.innerWidth * 29 / 14.0;
         //With the Div(i.e. "canvasContainer")'s size set,
         //the Canvas's and White Keys' Widths are set.
-        //Initially, 24 Keys are shown, but the widths of Canvas 
-        //and Black & White Keys can Change.
+        //Initially, 24 Keys are shown, but the widths of the Canvas 
+        //and Black & White Keys can change.
         canvas.width = canvasContainer.clientWidth * 29 / 14.0;
         whiteKeyWidth = canvasContainer.clientWidth / 14.0;
         blackKeyWidth = whiteKeyWidth * 0.6;
@@ -61,7 +51,7 @@ function setUp() {
         //The "offset"px of Paddding on the top helps align 
         //the spans with their respective keys.
         var canvasRect = document.getElementById("pageCanvas").getBoundingClientRect();
-        var spanRect = document.getElementById("C1").getBoundingClientRect();
+        var spanRect = document.getElementById("escape").getBoundingClientRect();
         offset = spanRect.top - canvasRect.top;
         spanDiv = document.getElementById("spanDiv");
         spanDiv.setAttribute("padding-top", -offset + "px");
@@ -69,126 +59,66 @@ function setUp() {
         //Setting the Width of the Span Div so that it spans across the entire piano.
         spanDiv.setAttribute("width", canvas.width + 3 + "px");
         spanDiv.style.width = canvas.width + 3 + "px";
-        /*Setting up the Spans/"Keys" which will handle
-        the interactions with the piano.*/
+        /* Setting default key bindings and mapping them to a object that encapsulates
+           the note, its sound number, and "pressed' status.*/
+        //First Octave
+        keyBindings.set("escape", new NoteObject("C1", 0 + 12 * 3));
+        keyBindings.set("f1", new NoteObject("C#/D♭1", 1 + 12 * 3));
+        keyBindings.set("`", new NoteObject("D1", 2 + 12 * 3));
+        keyBindings.set("f2", new NoteObject("D#/E♭1", 3 + 12 * 3));
+        keyBindings.set("1", new NoteObject("E1", 4 + 12 * 3));
+        keyBindings.set("2", new NoteObject("F1", 5 + 12 * 3));
+        keyBindings.set("f3", new NoteObject("F#/G♭1", 6 + 12 * 3));
+        keyBindings.set("3", new NoteObject("G1", 7 + 12 * 3));
+        keyBindings.set("f4", new NoteObject("G#/A♭1", 8 + 12 * 3));
+        keyBindings.set("4", new NoteObject("A1", 9 + 12 * 3));
+        keyBindings.set("f5", new NoteObject("A#/B♭1", 10 + 12 * 3));
+        keyBindings.set("5", new NoteObject("B1", 11 + 12 * 3));
+        //Second Octave
+        keyBindings.set("tab", new NoteObject("C2", 0 + 12 * 4));
+        keyBindings.set("q", new NoteObject("C#/D♭2", 1 + 12 * 4));
+        keyBindings.set("capslock", new NoteObject("D2", 2 + 12 * 4));
+        keyBindings.set("w", new NoteObject("D#/E♭2", 3 + 12 * 4));
+        keyBindings.set("a", new NoteObject("E2", 4 + 12 * 4));
+        keyBindings.set("s", new NoteObject("F2", 5 + 12 * 4));
+        keyBindings.set("e", new NoteObject("F#/G♭2", 6 + 12 * 4));
+        keyBindings.set("d", new NoteObject("G2", 7 + 12 * 4));
+        keyBindings.set("r", new NoteObject("G#/A♭2", 8 + 12 * 4));
+        keyBindings.set("f", new NoteObject("A2", 9 + 12 * 4));
+        keyBindings.set("t", new NoteObject("A#/B♭2", 10 + 12 * 4));
+        keyBindings.set("g", new NoteObject("B2", 11 + 12 * 4));
+        //Third Octave
+        keyBindings.set("u", new NoteObject("C3", 0 + 12 * 5));
+        keyBindings.set("i", new NoteObject("C#/D♭3", 1 + 12 * 5));
+        keyBindings.set("j", new NoteObject("D3", 2 + 12 * 5));
+        keyBindings.set("o", new NoteObject("D#/E♭3", 3 + 12 * 5));
+        keyBindings.set("k", new NoteObject("E3", 4 + 12 * 5));
+        keyBindings.set("l", new NoteObject("F3", 5 + 12 * 5));
+        keyBindings.set("p", new NoteObject("F#/G♭3", 6 + 12 * 5));
+        keyBindings.set(";", new NoteObject("G3", 7 + 12 * 5));
+        keyBindings.set("[", new NoteObject("G#/A♭3", 8 + 12 * 5));
+        keyBindings.set("'", new NoteObject("A3", 9 + 12 * 5));
+        keyBindings.set("]", new NoteObject("A#/B♭3", 10 + 12 * 5));
+        keyBindings.set("enter", new NoteObject("B3", 11 + 12 * 5));
+        //Fourth Octave
+        keyBindings.set("f6", new NoteObject("C4", 0 + 12 * 6));
+        keyBindings.set("f7", new NoteObject("C#/D♭4", 1 + 12 * 6));
+        keyBindings.set("7", new NoteObject("D4", 2 + 12 * 6));
+        keyBindings.set("f8", new NoteObject("D#/E♭4", 3 + 12 * 6));
+        keyBindings.set("8", new NoteObject("E4", 4 + 12 * 6));
+        keyBindings.set("9", new NoteObject("F4", 5 + 12 * 6));
+        keyBindings.set("f9", new NoteObject("F#/G♭4", 6 + 12 * 6));
+        keyBindings.set("0", new NoteObject("G4", 7 + 12 * 6));
+        keyBindings.set("f10", new NoteObject("G#/A♭4", 8 + 12 * 6));
+        keyBindings.set("-", new NoteObject("A4", 9 + 12 * 6));
+        keyBindings.set("f11", new NoteObject("A#/B♭4", 10 + 12 * 6));
+        keyBindings.set("=", new NoteObject("B4", 11 + 12 * 6));
+        //Last C
+        keyBindings.set("backspace", new NoteObject("C5", 0 + 12 * 7));
         //Initializing the sizes and event handlers for the keys
         var allKeySpans = document.querySelectorAll("span");
         allKeySpans.forEach(initializeKeySpan);
-        //Adding event listener for when keys are pressed.
-        window.addEventListener("keydown", onKeyPressed);
-        window.addEventListener("keyup", onKeyReleased);
-        /* Setting default key bindings: */
-        //NOTE: can change insertion order to utilize the ".keys()" method when drawing key
-        //bindings on keyboard.
-        //First Octave
-        keyBindings.set("escape", "C1");
-        keyBindings.set("`", "D1");
-        keyBindings.set("1", "E1");
-        keyBindings.set("2", "F1");
-        keyBindings.set("3", "G1");
-        keyBindings.set("4", "A1");
-        keyBindings.set("5", "B1");
-        keyBindings.set("f1", "C#/D♭1");
-        keyBindings.set("f2", "D#/E♭1");
-        keyBindings.set("f3", "F#/G♭1");
-        keyBindings.set("f4", "G#/A♭1");
-        keyBindings.set("f5", "A#/B♭1");
-        //Second Octave
-        keyBindings.set("tab", "C2");
-        keyBindings.set("capslock", "D2");
-        keyBindings.set("a", "E2");
-        keyBindings.set("s", "F2");
-        keyBindings.set("d", "G2");
-        keyBindings.set("f", "A2");
-        keyBindings.set("g", "B2");
-        keyBindings.set("q", "C#/D♭2");
-        keyBindings.set("w", "D#/E♭2");
-        keyBindings.set("e", "F#/G♭2");
-        keyBindings.set("r", "G#/A♭2");
-        keyBindings.set("t", "A#/B♭2");
-        //Third Octave
-        keyBindings.set("y", "C3");
-        keyBindings.set("h", "D3");
-        keyBindings.set("j", "E3");
-        keyBindings.set("k", "F3");
-        keyBindings.set("l", "G3");
-        keyBindings.set(";", "A3");
-        keyBindings.set("'", "B3");
-        keyBindings.set("u", "C#/D♭3");
-        keyBindings.set("i", "D#/E♭3");
-        keyBindings.set("o", "F#/G♭3");
-        keyBindings.set("p", "G#/A♭3");
-        keyBindings.set("[", "A#/B♭3");
-        //Fourth Octave
-        keyBindings.set("f6", "C4");
-        keyBindings.set("7", "D4");
-        keyBindings.set("8", "E4");
-        keyBindings.set("9", "F4");
-        keyBindings.set("0", "G4");
-        keyBindings.set("-", "A4");
-        keyBindings.set("=", "B4");
-        keyBindings.set("f7", "C#/D♭4");
-        keyBindings.set("f8", "D#/E♭4");
-        keyBindings.set("f9", "F#/G♭4");
-        keyBindings.set("f10", "G#/A♭4");
-        keyBindings.set("f11", "A#/B♭4");
-        //Last C
-        keyBindings.set("Enter", "C5");
-        /* Default key pressed values. Initially, no keys are pressed and therefore
-        map to a value of "false."*/
-        pressedKeys.set("C1", false);
-        pressedKeys.set("C#/D♭1", false);
-        pressedKeys.set("D1", false);
-        pressedKeys.set("D#/E♭1", false);
-        pressedKeys.set("E1", false);
-        pressedKeys.set("F1", false);
-        pressedKeys.set("F#/G♭1", false);
-        pressedKeys.set("G1", false);
-        pressedKeys.set("G#/A♭1", false);
-        pressedKeys.set("A1", false);
-        pressedKeys.set("A#/B♭1", false);
-        pressedKeys.set("B1", false);
-        pressedKeys.set("C2", false);
-        pressedKeys.set("C#/D♭2", false);
-        pressedKeys.set("D2", false);
-        pressedKeys.set("D#/E♭2", false);
-        pressedKeys.set("E2", false);
-        pressedKeys.set("F2", false);
-        pressedKeys.set("F#/G♭2", false);
-        pressedKeys.set("G2", false);
-        pressedKeys.set("G#/A♭2", false);
-        pressedKeys.set("A2", false);
-        pressedKeys.set("A#/B♭2", false);
-        pressedKeys.set("B2", false);
-        pressedKeys.set("C3", false);
-        pressedKeys.set("C#/D♭3", false);
-        pressedKeys.set("D3", false);
-        pressedKeys.set("D#/E♭3", false);
-        pressedKeys.set("E3", false);
-        pressedKeys.set("F3", false);
-        pressedKeys.set("F#/G♭3", false);
-        pressedKeys.set("G3", false);
-        pressedKeys.set("G#/A♭3", false);
-        pressedKeys.set("A3", false);
-        pressedKeys.set("A#/B♭3", false);
-        pressedKeys.set("B3", false);
-        pressedKeys.set("C4", false);
-        pressedKeys.set("C#/D♭4", false);
-        pressedKeys.set("D4", false);
-        pressedKeys.set("D#/E♭4", false);
-        pressedKeys.set("E4", false);
-        pressedKeys.set("F4", false);
-        pressedKeys.set("F#/G♭4", false);
-        pressedKeys.set("G4", false);
-        pressedKeys.set("G#/A♭4", false);
-        pressedKeys.set("A4", false);
-        pressedKeys.set("A#/B♭4", false);
-        pressedKeys.set("B4", false);
-        pressedKeys.set("C5", false);
-        //Testing
-        //console.log(keyBindings);
-        //console.log(pressedKeys);
-        //Drawing the piano
+        //Drawing the piano:
         draw();
     }
     else {
@@ -197,70 +127,52 @@ function setUp() {
     }
 }
 //*****************************************//
-/* Interactivity & Functionality */
+/* Functionality */
 //*****************************************//
-function playNote(e) {
-    console.log(e.target.id);
-}
 //Note: 24 keys are initially displayed.
 function initializeKeySpan(spanElement, key) {
     //Adding Event Listeners
     spanElement.addEventListener("mouseenter", onHover);
     spanElement.addEventListener("mouseleave", normal);
-    spanElement.addEventListener("mousedown", onMousePressed);
     spanElement.addEventListener("mouseup", onHover);
-    spanElement.addEventListener("click", playNote);
     //Sizing the Spans
     resizeSpans(spanElement);
 }
-/* Event Listener Methods which are executed when the user intereacts with the piano. */
+/* Event Listener Methods which change the appearance of the keys in different conditions.*/
 function onHover(event) {
     event.target.setAttribute("class", "hoveredKey");
 }
 function normal(event) {
     event.target.setAttribute("class", "normalKey");
 }
-function onMousePressed(event) {
-    event.target.setAttribute("class", "pressedKey");
-}
-function onKeyPressed(event) {
-    event.preventDefault();
-    //For Testing:
-    //console.log(event);
-    //console.log(event.key);
-    //console.log(event.key.toLowerCase());
-    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized unless explicitly lower-cased.
-    var keyPressed = event.key.toLowerCase();
-    //The code only runs if the key that is pressed is bound to a note.
-    if (keyBindings.has(keyPressed)) {
-        var playedNote = keyBindings.get(keyPressed);
-        var pressedSpan = document.getElementById(playedNote);
-        pressedSpan.setAttribute("class", "pressedKey");
-        //If the key isn't pressed, it is set to true in the pressedKeys binding.
-        //If the key is already pressed, nothing happens.
-        if (!pressedKeys.get(playedNote)) {
-            pressedKeys.set(playedNote, true);
-            console.log("Key played");
-        }
-        else {
-            console.log("Key is repeatedly playing");
-        }
+//Note: This method is called in the in-line script tag in index.html
+function playNote(pushedKey) {
+    var pressedSpan = document.getElementById(pushedKey);
+    pressedSpan.setAttribute("class", "pressedKey");
+    var notePlayed = keyBindings.get(pushedKey);
+    //If the key isn't pressed, it is set to true in the pressedKeys binding.
+    //If the key is already pressed, nothing happens.
+    if (!notePlayed.notePressed) {
+        notePlayed.notePressed = true;
     }
 }
-function onKeyReleased(event) {
-    //Adding ".toLowerCase()" as "Caps Lock" is a key and when it is on, the keys
-    //containing letters won't be recognized unless explicitly lower-cased.
-    var keyPressed = event.key.toLowerCase();
+//Note: This method is called in the in-line script tag in index.html
+function stopNote(releasedKey) {
     //The code only runs if the key that is pressed is bound to a note.
-    if (keyBindings.has(keyPressed)) {
-        //When the key is released, the pressedKeys's entry for they key is set to false
-        //as that key is no longer pressed.
-        var playedNote = keyBindings.get(keyPressed);
-        pressedKeys.set(playedNote, false);
-        var pressedSpan = document.getElementById(playedNote);
-        pressedSpan.setAttribute("class", "normalKey");
-    }
+    //When the key is released, the pressedKeys's entry for they key is set to false
+    //as that key is no longer pressed.
+    var pressedSpan = document.getElementById(releasedKey);
+    pressedSpan.setAttribute("class", "normalKey");
+    var playedNote = keyBindings.get(releasedKey);
+    playedNote.notePressed = false;
+}
+//When the mouse is released, it will still be on top of the key that was pressed, so the key
+//would be styled as if the mouse was hovering on it.
+function stopNoteMouse(releasedKey) {
+    var pressedSpan = document.getElementById(releasedKey);
+    pressedSpan.setAttribute("class", "hoveredKey");
+    var playedNote = keyBindings.get(releasedKey);
+    playedNote.notePressed = false;
 }
 function resizeSpans(pianoKey) {
     if (pianoKey)
@@ -275,16 +187,16 @@ function resizeSpans(pianoKey) {
 var moveRightWhiteKeyLeft = false;
 function resizingSpan(currSpan) {
     //Setting the width and height of each span element.
-    //Black Keys' Ids will have a "/" in them to separate
-    //the Sharp/Flat notes they represent. Also, the spans are aligned 
+    //Black Keys' Notes have a "/" in them to separate
+    //the Sharp/Flat they represent. Also, the spans are aligned 
     //in front of their respective keys using a negative margin.
-    if (currSpan.id.indexOf("/") !== -1) {
+    if (keyBindings.get(currSpan.id).note.indexOf("/") !== -1) {
         currSpan.setAttribute("width", blackKeyWidth + "px");
         currSpan.style.width = blackKeyWidth + "px";
         currSpan.setAttribute("height", blackKeyHeight + "px");
         currSpan.style.height = blackKeyHeight + "px";
-        currSpan.setAttribute("margin-bottom", -blackKeyHeight + "px");
-        currSpan.style.marginBottom = -blackKeyHeight + "px";
+        currSpan.setAttribute("margin-bottom", -blackKeyHeight - 3 + "px");
+        currSpan.style.marginBottom = -blackKeyHeight - 3 + "px";
         currSpan.setAttribute("margin-left", -blackKeyWidth / 2 + "px");
         currSpan.style.marginLeft = -blackKeyWidth / 2 + "px";
         //Setting the z-index to 2 so that the black keys' are on top of the 
@@ -298,8 +210,8 @@ function resizingSpan(currSpan) {
         currSpan.style.width = whiteKeyWidth + "px";
         currSpan.setAttribute("height", whiteKeyHeight + "px");
         currSpan.style.height = whiteKeyHeight + "px";
-        currSpan.setAttribute("marginBottom", -whiteKeyHeight + "px");
-        currSpan.style.marginBottom = -whiteKeyHeight + "px";
+        currSpan.setAttribute("marginBottom", -whiteKeyHeight - 3 + "px");
+        currSpan.style.marginBottom = -whiteKeyHeight - 3 + "px";
         if (moveRightWhiteKeyLeft === true) {
             currSpan.setAttribute("margin-left", -blackKeyWidth / 2 + "px");
             currSpan.style.marginLeft = -blackKeyWidth / 2 + "px";
@@ -313,13 +225,9 @@ var buttonsDiv = document.getElementById("numKeysVisible");
 var currentNumKeys = 24;
 buttonsDiv.addEventListener("click", function (event) {
     var newNumKeys = Number(event.target.textContent);
-    //Testing if the selected number of keys is what is already being displayed. If so,
-    //nothing happens.
     if (newNumKeys === currentNumKeys)
         return;
     else {
-        //If the selected number of keys is different from the current,
-        //The new number of visible keys is stored to check for next time.
         currentNumKeys = newNumKeys;
         switch (newNumKeys) {
             case 12:
@@ -349,8 +257,9 @@ buttonsDiv.addEventListener("click", function (event) {
 //*****************************************//
 function drawWhiteKeys() {
     for (var counter = 0; counter < 28; counter += 7)
-        for (var i = 0; i <= 6; i++)
+        for (var i = 0; i <= 6; i++) {
             ctx.strokeRect(whiteKeyWidth * (counter + i), 0, whiteKeyWidth, whiteKeyHeight);
+        }
     //Drawing the Final White Key
     ctx.strokeRect(whiteKeyWidth * 28, 0, whiteKeyWidth, whiteKeyHeight);
 }
@@ -383,34 +292,71 @@ function drawWhiteKeysNotes() {
 function drawBlackKeysNotes() {
     for (var counter = 0; counter < 28; counter += 7)
         for (var i = 0; i <= 6; i++) {
-            var topLeft = whiteKeyWidth * (counter + i + 0.7);
             if (i != 2 && i != 6) {
+                var topLeft = whiteKeyWidth * (counter + i + 0.7);
                 ctx.fillText(pianoNotes[(i + 2) % 7] + "#", topLeft + (blackKeyWidth * 0.01), blackKeyHeight * 1 / 3, blackKeyWidth);
                 ctx.fillText(pianoNotes[(i + 3) % 7] + "♭", topLeft + (blackKeyWidth * 0.03), blackKeyHeight * 2 / 3, blackKeyWidth);
             }
         }
 }
-function draw() {
-    if (canvas.getContext) {
-        ctx = canvas.getContext("2d");
-        if (ctx) {
-            //Draws the keys for a 49-key Keyboard
-            ctx.moveTo(0, 0);
-            ctx.strokeStyle = "grey";
-            drawWhiteKeys();
-            ctx.fillStyle = "black";
-            ctx.font = whiteKeyWidth * 0.8 + "px sans-serif";
-            drawBlackKeys();
-            drawWhiteKeysNotes();
-            ctx.fillStyle = "white";
-            ctx.font = blackKeyWidth * 0.8 + "px sans-serif";
-            drawBlackKeysNotes();
+function drawWhiteKeyBindings() {
+    var keys = keyBindings.keys();
+    var boundNotes = keyBindings.values();
+    var currentKey = keys.next();
+    var currentNote = boundNotes.next();
+    var counter = 0;
+    while (!currentKey.done) {
+        if (currentNote.value.note.indexOf("#") === -1) {
+            var currentKeyBinding = currentKey.value;
+            var topLeft = whiteKeyWidth * counter;
+            if (currentKey.value.length <= 3)
+                ctx.fillText("[" + currentKeyBinding + "]", topLeft + whiteKeyWidth / 2.5, whiteKeyHeight * 9 / 10, whiteKeyWidth);
+            else
+                ctx.fillText("[" + currentKeyBinding + "]", topLeft + whiteKeyWidth / (currentKey.value.length), whiteKeyHeight * 9 / 10, whiteKeyWidth);
+            counter++;
         }
+        currentKey = keys.next();
+        currentNote = boundNotes.next();
     }
-    else {
-        alert("This browser does not support the Javascript Canvas element which is necessary to run this application.");
-        console.error("Error: Canvas not supported.");
+}
+function drawBlackKeyBindings() {
+    var keys = keyBindings.keys();
+    var boundNotes = keyBindings.values();
+    var currentKey = keys.next();
+    var currentNote = boundNotes.next();
+    var counter = -1;
+    while (!currentKey.done) {
+        if (currentNote.value.note.indexOf("#") !== -1) {
+            var currentKeyBinding = currentKey.value;
+            var topLeft = whiteKeyWidth * (counter + 0.7);
+            ctx.fillText("[" + currentKeyBinding + "]", topLeft + blackKeyWidth * (0.4 - (currentKeyBinding.length / 16.5)) + 2, blackKeyHeight * 5 / 6, blackKeyWidth);
+        }
+        else {
+            //If the currentKey is a White Key, move forward 1 White Key Width.
+            counter++;
+        }
+        currentKey = keys.next();
+        currentNote = boundNotes.next();
     }
+}
+function draw() {
+    //Draws the keys for a 49-key Keyboard
+    ctx.moveTo(0, 0);
+    ctx.strokeStyle = "grey";
+    drawWhiteKeys();
+    ctx.fillStyle = "black";
+    ctx.font = whiteKeyWidth * 0.8 + "px sans-serif";
+    drawBlackKeys();
+    drawWhiteKeysNotes();
+    ctx.fillStyle = "white";
+    ctx.font = blackKeyWidth * 0.8 + "px sans-serif";
+    drawBlackKeysNotes();
+    ctx.fillStyle = "turquoise";
+    ctx.font = whiteKeyWidth * 0.16 + "px sans-serif";
+    drawWhiteKeyBindings();
+    ctx.fillStyle = "lightblue";
+    ctx.font = blackKeyWidth * 0.25 + "px sans-serif";
+    drawBlackKeyBindings();
 }
 function reDraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

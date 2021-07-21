@@ -8,100 +8,159 @@
         <title>Canvas Practice</title>
         <link rel="stylesheet" href="styles/style.css" type="text/css">
         <script src="scripts/main.js" defer></script>
+        <!-- 
+            These script files come from the WebAudioFont library which was created and is owned 
+            by Srgy Surkv (Github Repository Link: https://github.com/surikov/webaudiofont). 
+            I am using WebAudioFont for the sounds in my project.
+        -->
         <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js' defer></script>
-		<script src='https://surikov.github.io/webaudiofontdata/sound/0000_SoundBlasterOld_sf2.js' defer></script>
         <script defer>
-            var audioContext;
             var player;
+            var audioContext;
+            //Stores the instruments that are loaded
+            var instruments = new Map();
+            //Stores the selected instrument
+            var selectedInstrument;
+
             function initializeAudio(){
                 audioContext = new window.AudioContext;
                 player = new WebAudioFontPlayer();
-                player.loader.decodeAfterLoading(audioContext, '_tone_0000_SoundBlasterOld_sf2');
-                let allSpans = document.querySelectorAll("span");
-                allSpans.forEach(assignAudio)
-                player.queueWaveTable(audioContext, audioContext.destination, _tone_0000_SoundBlasterOld_sf2, 0, 6+12*4, 5);
+                //Loading Piano
+                player.loader.startLoad(audioContext, "https://surikov.github.io/webaudiofontdata/sound/0000_SoundBlasterOld_sf2.js", "_tone_0000_SoundBlasterOld_sf2");
+                player.loader.waitLoad(function(){
+                    instruments.set("Piano", _tone_0000_SoundBlasterOld_sf2);
+                    }
+                );
+                //Loading Guitar
+                player.loader.startLoad(audioContext, "https://surikov.github.io/webaudiofontdata/sound/0240_JCLive_sf2_file.js", "_tone_0240_JCLive_sf2_file");
+                player.loader.waitLoad(function(){
+                    instruments.set("Guitar", _tone_0240_JCLive_sf2_file);
+                    }
+                );
+                //Loading Violin
+                player.loader.startLoad(audioContext, "https://surikov.github.io/webaudiofontdata/sound/0401_GeneralUserGS_sf2_file.js", "_tone_0401_GeneralUserGS_sf2_file");
+                player.loader.waitLoad(function(){
+                    instruments.set("Violin", _tone_0401_GeneralUserGS_sf2_file);
+                    }
+                );
+                //Loading Bass
+                player.loader.startLoad(audioContext, "https://surikov.github.io/webaudiofontdata/sound/0320_Chaos_sf2_file.js", "_tone_0320_Chaos_sf2_file");
+                player.loader.waitLoad(function(){
+                    instruments.set("Bass", _tone_0320_Chaos_sf2_file);
+                    }
+                );
+                //Loading Organ
+                player.loader.startLoad(audioContext, "https://surikov.github.io/webaudiofontdata/sound/0180_GeneralUserGS_sf2_file.js", "_tone_0180_GeneralUserGS_sf2_file");
+                player.loader.waitLoad(function(){
+                    instruments.set("Organ", _tone_0180_GeneralUserGS_sf2_file);
+                    //Setting the initial instrument based on the selected option. Initially, Piano is selected.
+                    let instrumentDropDown = document.getElementById("instrumentSelector");
+                    selectedInstrument = instruments.get(instrumentDropDown.value);
+                    }
+                );
             }
-            function assignAudio(key, num){
-                
+
+            function changeInstrument(event){
+                let instrumentChosen = event.target.value;
+                selectedInstrument = instruments.get(instrumentChosen);
             }
-            function printBindings(){
-                console.log(keyBindings);
-                console.log(pressedKeys);
+
+            function mousePressed(event){
+                pressedKey = event.target.id
+                let notePlayed = keyBindings.get(pressedKey);
+                if(!notePlayed.notePressed){
+                    player.queueWaveTable(audioContext, audioContext.destination, selectedInstrument, 0, notePlayed.noteNumber, 1);
+                }
+                playNote(pressedKey);
+            }
+
+            function mouseReleased(event){
+                let releasedKey = event.target.id;
+                stopNoteMouse(releasedKey);
+            }
+
+            function keyPressed(event){
+                event.preventDefault();
+                let pressedKey = event.key.toLowerCase();
+                if(keyBindings.has(pressedKey)){
+                    let notePlayed = keyBindings.get(pressedKey);
+                    if(!notePlayed.notePressed){
+                        player.queueWaveTable(audioContext, audioContext.destination, selectedInstrument, 0, notePlayed.noteNumber, 1);
+                    }
+                    playNote(pressedKey);
+                }
+            }
+
+            function keyReleased(event){
+                event.preventDefault();
+                let releasedKey = event.key.toLowerCase();
+                if(keyBindings.has(releasedKey)){
+                    stopNote(releasedKey);
+                }
             }
         </script>
     </head>
-    <body onload="setUp(); initializeAudio();">
+    <body onload="setUp(); initializeAudio();" onkeydown="keyPressed(event);" onkeyup="keyReleased(event);">
         <h1>Virtual Keyboard</h1>
+        <label for="instrumentSelector"></label>
+        <select id="instrumentSelector" oninput="changeInstrument(event);">
+            <option>Piano</option>
+            <option>Guitar</option>
+            <option>Violin</option>
+            <option>Bass</option>
+            <option>Organ</option>
+        </select>
         <div id="canvasDiv">
-            <!-- Consider having Ids include the name
-            of the Key, the Number/Iteration of Occurrence of the key,
-            and the current keyboard key which corresponds to that key.  -->
-            <div id="spanDiv">
-                <span id="C1"></span
-                ><span id="C#/D♭1"></span
-                ><span id="D1"></span
-                ><span id="D#/E♭1"></span
-                ><span id="E1"></span
-                ><span id="F1"></span
-                ><span id="F#/G♭1"></span
-                ><span id="G1"></span
-                ><span id="G#/A♭1"></span
-                ><span id="A1"></span
-                ><span id="A#/B♭1"></span
-                ><span id="B1"></span
-                ><span id="C2"></span
-                ><span id="C#/D♭2"></span
-                ><span id="D2"></span
-                ><span id="D#/E♭2"></span
-                ><span id="E2"></span
-                ><span id="F2"></span
-                ><span id="F#/G♭2"></span
-                ><span id="G2"></span
-                ><span id="G#/A♭2"></span
-                ><span id="A2"></span
-                ><span id="A#/B♭2"></span
-                ><span id="B2"></span
-                ><span id="C3"></span
-                ><span id="C#/D♭3"></span
-                ><span id="D3"></span
-                ><span id="D#/E♭3"></span
-                ><span id="E3"></span
-                ><span id="F3"></span
-                ><span id="F#/G♭3"></span
-                ><span id="G3"></span
-                ><span id="G#/A♭3"></span
-                ><span id="A3"></span
-                ><span id="A#/B♭3"></span
-                ><span id="B3"></span
-                ><span id="C4"></span
-                ><span id="C#/D♭4"></span
-                ><span id="D4"></span
-                ><span id="D#/E♭4"></span
-                ><span id="E4"></span
-                ><span id="F4"></span
-                ><span id="F#/G♭4"></span
-                ><span id="G4"></span
-                ><span id="G#/A♭4"></span
-                ><span id="A4"></span
-                ><span id="A#/B♭4"></span
-                ><span id="B4"></span
-                ><span id="C5"></span>
-                <!-- Commenting out last set of keys
-                    due to lack of actual keys on the keyboard
-                    to support them.
-                ><span id="C#/D♭5"></span
-                ><span id="D5"></span
-                ><span id="D#/E♭5"></span
-                ><span id="E5"></span
-                ><span id="F5"></span
-                ><span id="F#/G♭5"></span
-                ><span id="G5"></span
-                ><span id="G#/A♭5"></span
-                ><span id="A5"></span
-                ><span id="A#/B♭5"></span
-                ><span id="B5"></span
-                ><span id="C6"></span>
-                -->
+            <div id="spanDiv" onmousedown="mousePressed(event);" onmouseup="mouseReleased(event);""> 
+                <span id="escape"></span
+                ><span id="f1"></span
+                ><span id="`"></span
+                ><span id="f2"></span
+                ><span id="1"></span
+                ><span id="2"></span
+                ><span id="f3"></span
+                ><span id="3"></span
+                ><span id="f4"></span
+                ><span id="4"></span
+                ><span id="f5"></span
+                ><span id="5"></span
+                ><span id="tab"></span
+                ><span id="q"></span
+                ><span id="capslock"></span
+                ><span id="w"></span
+                ><span id="a"></span
+                ><span id="s"></span
+                ><span id="e"></span
+                ><span id="d"></span
+                ><span id="r"></span
+                ><span id="f"></span
+                ><span id="t"></span
+                ><span id="g"></span
+                ><span id="u"></span
+                ><span id="i"></span
+                ><span id="j"></span
+                ><span id="o"></span
+                ><span id="k"></span
+                ><span id="l"></span
+                ><span id="p"></span
+                ><span id=";"></span
+                ><span id="["></span
+                ><span id="'"></span
+                ><span id="]"></span
+                ><span id="enter"></span
+                ><span id="f6"></span
+                ><span id="f7"></span
+                ><span id="7"></span
+                ><span id="f8"></span
+                ><span id="8"></span
+                ><span id="9"></span
+                ><span id="f9"></span
+                ><span id="0"></span
+                ><span id="f10"></span
+                ><span id="-"></span
+                ><span id="f11"></span
+                ><span id="="></span
+                ><span id="backspace"></span>
             </div>
             <canvas id="pageCanvas">
                 <p>Your browser does not support Canvas.</p>
@@ -109,11 +168,10 @@
         </div>
         <div id="numKeysVisible">
             <p># of Visible Keys: </p>
-            <button id="12-keys">12</button>
-            <button id="24-keys">24</button>
-            <button id="36-keys">36</button>
-            <button id="49-keys">49</button>
-            <!-- <button id="61-keys">61</button> -->
+            <button id="twelveKeys">12</button>
+            <button id="twentyFourKeys">24</button>
+            <button id="thirtySixKeys">36</button>
+            <button id="fortyNineKeys">49</button>
         </div>
     </body>
 </html>

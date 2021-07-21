@@ -1,8 +1,6 @@
 /* Page Layout, Style, and Heading */
 
 html{
-    /*background-color: blueviolet;*/
-    /*color: white;*/
     background-color: black;
     color: gold;
     font-family: sans-serif;
@@ -20,6 +18,22 @@ h1{
     margin-bottom: 0.5vh;
 }
 
+/* Instrument Selector */
+
+#instrumentSelector{
+    font-size: 1.1rem;
+    text-align: center;
+    width: 6vw;
+    background-color: rgb(14, 14, 141);
+    border: white solid 1.5px;
+    border-radius: 0.6vw;
+    color: white;
+}
+
+#instrumentSelector:hover {
+    background-color: darkred;
+}
+
 /* Canvas  */
 
 #canvasDiv{
@@ -32,8 +46,7 @@ h1{
     position: relative; top: 0%; bottom: 0%; left: 0%; right: 0%;
     z-index: 0;
     background-color: white;
-    /*border: 3px solid black;*/
-    border: 3px solid gold;
+    border: 3px ridge gold;
 }
 
 /* Spans/"Keys" */
@@ -41,6 +54,9 @@ h1{
 #spanDiv{
     padding-left: 3px;
     height: 1vmax;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
 }
 
 span{
@@ -75,7 +91,20 @@ span{
     font-weight: bolder;
 }
 
-#numKeysVisible button{
+button{
     width: 5vw;
     font-size: 1rem;
+    background-color: rgb(14, 14, 141);
+    border: white solid 1.5px;
+    border-radius: 0.6vw;
+    color: white;
+}
+
+button:hover{
+    text-decoration: underline;
+    background-color: darkred;
+}
+
+button:active{
+    background-color: rgb(255, 0, 0);
 }
