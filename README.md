@@ -1,6 +1,8 @@
 # Online-Piano
 A virtual piano created using CSS, HTML5, Typescript, and the WebAudioFont package created by [Srgy Surkv](https://github.com/surikov) (Link to WebAudioFont GitHub Repository: [https://github.com/surikov/webaudiofont](https://github.com/surikov/webaudiofont)).
 
+![Image of my Online-Piano](https://github.com/Rohaan553/Online-Piano/blob/main/images/piano-snapshot.PNG)
+
 ## Installation
 No installation or setup is needed, as the piano is hosted completely online at [https://rohaan553.github.io/Online-Piano/](https://rohaan553.github.io/Online-Piano/).
 
