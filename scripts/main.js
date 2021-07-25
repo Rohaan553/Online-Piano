@@ -351,7 +351,7 @@ function draw() {
     ctx.fillStyle = "white";
     ctx.font = blackKeyWidth * 0.8 + "px sans-serif";
     drawBlackKeysNotes();
-    ctx.fillStyle = "turquoise";
+    ctx.fillStyle = "purple";
     ctx.font = whiteKeyWidth * 0.16 + "px sans-serif";
     drawWhiteKeyBindings();
     ctx.fillStyle = "lightblue";

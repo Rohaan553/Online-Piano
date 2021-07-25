@@ -81,6 +81,7 @@
 
             function keyPressed(event){
                 event.preventDefault();
+                console.log(event);
                 let pressedKey = event.key.toLowerCase();
                 if(keyBindings.has(pressedKey)){
                     let notePlayed = keyBindings.get(pressedKey);
