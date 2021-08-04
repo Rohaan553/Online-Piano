@@ -14,7 +14,7 @@
             I am using WebAudioFont for the sounds in my project.
         -->
         <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js' defer></script>
-        <script defer>
+        <script>
             var player;
             var audioContext;
             //Stores the instruments that are loaded
@@ -81,7 +81,6 @@
 
             function keyPressed(event){
                 event.preventDefault();
-                console.log(event);
                 let pressedKey = event.key.toLowerCase();
                 if(keyBindings.has(pressedKey)){
                     let notePlayed = keyBindings.get(pressedKey);
@@ -99,12 +98,26 @@
                     stopNote(releasedKey);
                 }
             }
+
+            //When the window + DOM elements have loaded, the initial setup occurs.
+            window.onload = (event => {
+                let docBody = document.querySelector("body");
+                docBody.addEventListener("keydown", keyPressed);
+                docBody.addEventListener("keyup", keyReleased);
+                let keysDiv = document.getElementById("spanDiv");
+                keysDiv.addEventListener("mousedown", mousePressed);
+                keysDiv.addEventListener("mouseup", mouseReleased);
+                let instrumentSelector = document.getElementById("instrumentSelector");
+                instrumentSelector.addEventListener("input", changeInstrument);
+                initializeAudio();
+                setUp();  
+            })
         </script>
     </head>
-    <body onload="setUp(); initializeAudio();" onkeydown="keyPressed(event);" onkeyup="keyReleased(event);">
+    <body>
         <h1>Virtual Keyboard</h1>
         <label for="instrumentSelector"></label>
-        <select id="instrumentSelector" oninput="changeInstrument(event);">
+        <select id="instrumentSelector">
             <option>Piano</option>
             <option>Guitar</option>
             <option>Violin</option>
@@ -112,7 +125,7 @@
             <option>Organ</option>
         </select>
         <div id="canvasDiv">
-            <div id="spanDiv" onmousedown="mousePressed(event);" onmouseup="mouseReleased(event);""> 
+            <div id="spanDiv"> 
                 <span id="escape"></span
                 ><span id="f1"></span
                 ><span id="`"></span
@@ -164,7 +177,7 @@
                 ><span id="backspace"></span>
             </div>
             <canvas id="pageCanvas">
-                <p>Your browser does not support Canvas.</p>
+                <p>Your browser does not support the Javascript Canvas.</p>
             </canvas>
         </div>
         <div id="numKeysVisible">
