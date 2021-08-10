@@ -7,7 +7,7 @@ A virtual piano created using CSS, HTML5, Typescript, and the WebAudioFont packa
 No installation or setup is needed, as the piano is hosted completely online at [https://rohaan553.github.io/Online-Piano/](https://rohaan553.github.io/Online-Piano/).
 
 ## Key Features
-- 49-key keyboard rendered using HTML, CSS, and the Javascript canvas
+- 49-key keyboard rendered using HTML, CSS, JavaScript, and the JavaScript Canvas API
 - Supports 5 instruments: Piano, Guitar, Violin, Bass, and Organ
 - Options to adjust the number of visible keys
 - Supports keyboard and mouse input 
