@@ -4,7 +4,7 @@ A virtual piano created using CSS, HTML5, Typescript, and the WebAudioFont packa
 ![Image of my Online-Piano](https://github.com/Rohaan553/Online-Piano/blob/main/images/piano-snapshot.PNG)
 
 ## Installation
-No installation or setup is needed, as the piano is hosted completely online at [https://rohaan553.github.io/Online-Piano/](https://rohaan553.github.io/Online-Piano/).
+No installation or setup is needed, as the piano is hosted completely online at [https://rohaan553.github.io/Online-Piano/](https://rohaan553.github.io/Online-Piano/) (NOTE: It is recommended to view the app in Microsoft Edge, as it does not work on Firefox)
 
 ## Key Features
 - 49-key keyboard rendered using HTML, CSS, JavaScript, and the JavaScript Canvas API
